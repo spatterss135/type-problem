@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+    </ul>
+  </form>
+<script>
+const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+let cities = []
+
+fetch(endpoint)
+.then(response => response.json())
+.then((data) => {
+  cities.push(...data)
+  searchBox.addEventListener('keyup', handleSearchBoxInput)
+})
+
+
+let searchBox = document.querySelector('.search')
+let searchForm = document.querySelector('.search-form')
+let suggestions = document.querySelector('.suggestions')
+
+
+
+function handleSearchBoxInput(event) {
+
+  
+  if (suggestions.children.length > 0) {
+    Array.from(suggestions.children).forEach(child => {
+      if (child.tagName === 'LI') {
+        suggestions.removeChild(child)
+      }
+    })
+  }
+  
+
+  let searchRegex = `/^${this.value}/`
+  let filteredCities = cities.filter(city => searchRegex.match(city.city))
+  let topTen = filteredCities.slice(0,10)
+
+  
+  for (let i=0;i<topTen.length;i++){
+  let suggestionItem = document.createElement('li')
+  suggestionItem.innerHTML = topTen[i].city
+  suggestions.append(suggestionItem)
+}
+
+}
+
+
+</script>
+</body>
+</html>
